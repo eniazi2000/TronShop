@@ -35,7 +35,7 @@
                     <h4>Account : <span class="showAccount"></span></h4>
                     <span>Balance : <span class="AccountBalance"></span> TRX</span>
                     <hr>
-                    <button class="enableEthereumButton btn-block btn btn-success btn-lg">Connect to tronlink</button>
+                    <button class="enableEthereumButton btn-block btn btn-success btn-lg" onclick="gettronweb()">Connect to tronlink</button>
                 </div>
             </div>
             <div class="col-md-6">
@@ -154,40 +154,19 @@
     </div>
 
 </body>
-<script src="js/main.js"></script>
+<!-- <script src="js/main.js"></script> -->
 <script>
 
-    $(".basket-item").find("b").click(function () {
-        $(this).closest(".basket-item").remove();
-        calculateSum();
-    });
-
-    $(".product-card").find("button").click(function () {
-        var amount = $(this).closest(".product-card").find("b").text();
-        var imageUrl = $(this).closest(".product-card").find("img").attr("src");
-        var str = '<div class="col-md-3 basket-item" sum-data="' + amount + '"><center><img src="' + imageUrl + '" class="product-img"></center><b>X</b></div>';
-        $(".basket-list").append(str);
-        $(".basket-item").find("b").click(function () {
-            $(this).closest(".basket-item").remove();
-            calculateSum();
-        });
-        calculateSum();
-    });
-
-    function calculateSum() {
-        var Sum = 0;
-        var list = $(".basket-list").find(".basket-item");
-        $(list).each(function (index) {
-            Sum += parseFloat($(this).attr("sum-data"));
-        });
-        $("#sumLabel").text(Sum);
-    }
-    $("document").ready(function () {
-        //alert("hi")
-        calculateSum();
-        checkMetaMask();
-        getAccount();
-    });
+async function gettronweb(){
+            if(window.tronWeb && window.tronWeb.defaultAddress.base58){
+                window.tronWeb.fullNode.host='https://api.nileex.io'
+                $(".showAccount").html(window.tronWeb.defaultAddress.base58);
+                var balance = await tronWeb.trx.getBalance("TMw4YGDPG5gwMv7Dj3387Qmj7bFF6zyQ9Y");
+                        balance = balance / (10 ** 6);
+                        
+                $(".AccountBalance").html(balance);
+            }
+        }
 </script>
 
 </html>
