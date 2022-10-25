@@ -84,22 +84,16 @@ async function getAccount() {
                     console.log(tronWeb.fullNode.host);
                     console.log("tronWeb : ", tronWeb);
                     console.log("tronweb is successfully fetched from window");
-
                     try {
                         var currentaddress = await tronWeb.address.fromHex((await tronWeb.trx.getAccount()).address.toString());
                         showAccount.innerHTML = currentaddress;
-                     //   istronWeb = true;
-
                         var balance = await tronWeb.trx.getBalance(currentaddress);
                         balance = balance / (10 ** 6);
                         console.log(balance);
                         AccountBalance.innerHTML =balance;
-
-
                     } catch {
                         console.log("Tronweb not defined");
-                       
-                    }
+                   }
                 }, 3000);
       }
 

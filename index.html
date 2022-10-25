@@ -35,7 +35,8 @@
                     <h4>Account : <span class="showAccount"></span></h4>
                     <span>Balance : <span class="AccountBalance"></span> TRX</span>
                     <hr>
-                    <button class="enableEthereumButton btn-block btn btn-success btn-lg" onclick="gettronweb()">Connect to tronlink</button>
+                    <button class="enableEthereumButton btn-block btn btn-success btn-lg" onclick="gettronweb()">Connect
+                        to tronlink</button>
                 </div>
             </div>
             <div class="col-md-6">
@@ -48,7 +49,8 @@
                     <hr>
                     Sum : <b id="sumLabel">0</b> TRX
                     <hr>
-                    <button onclick="sendTron()" class="sendEthButton btn btn-block btn-warning btn-lg">Send TRX</button>
+                    <button onclick="sendTron()" class="sendEthButton btn btn-block btn-warning btn-lg">Send
+                        TRX</button>
                 </div>
             </div>
         </div>
@@ -156,30 +158,63 @@
 </body>
 <!-- <script src="js/main.js"></script> -->
 <script>
+    $(".basket-item").find("b").click(function () {
+        $(this).closest(".basket-item").remove();
+        calculateSum();
+    });
 
-async function gettronweb(){
-            if(window.tronWeb && window.tronWeb.defaultAddress.base58){
-                window.tronWeb.fullNode.host='https://api.nileex.io';
-                $(".showAccount").html(window.tronWeb.defaultAddress.base58);
-                var balance = await tronWeb.trx.getBalance("TMw4YGDPG5gwMv7Dj3387Qmj7bFF6zyQ9Y");
-                        balance = balance / (10 ** 6);
-                        
-                $(".AccountBalance").html(balance);
-            }
+    $(".product-card").find("button").click(function () {
+        var amount = $(this).closest(".product-card").find("b").text();
+        var imageUrl = $(this).closest(".product-card").find("img").attr("src");
+        var str = '<div class="col-md-3 basket-item" sum-data="' + amount + '"><center><img src="' + imageUrl + '" class="product-img"></center><b>X</b></div>';
+        $(".basket-list").append(str);
+        $(".basket-item").find("b").click(function () {
+            $(this).closest(".basket-item").remove();
+            calculateSum();
+        });
+        calculateSum();
+    });
+    function calculateSum() {
+        var Sum = 0;
+        var list = $(".basket-list").find(".basket-item");
+        $(list).each(function (index) {
+            Sum += parseFloat($(this).attr("sum-data"));
+        });
+        $("#sumLabel").text(Sum);
+    }
+    async function gettronweb() {
+        if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+            window.tronWeb.fullNode.host = 'https://api.nileex.io';
+            $(".showAccount").html(window.tronWeb.defaultAddress.base58);
+            var balance = await tronWeb.trx.getBalance("TMw4YGDPG5gwMv7Dj3387Qmj7bFF6zyQ9Y");
+            balance = balance / (10 ** 6);
+
+            $(".AccountBalance").html(balance);
         }
-
-        function sendTron()
-        {
-            var obj = setInterval(async ()=>{
+    }
+    function sendTron() {
+        var obj = setInterval(async () => {
             if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
                 clearInterval(obj)
-                window.tronWeb.fullNode.host='https://api.nileex.io';
-                var tronweb = window.tronWeb
-                var broastTx = await tronWeb.trx.sendTransaction("TN4SdCgnNsoAXnF61Hg7oTfKCsuUwYj5Uw", 10000000);
-                console.log(broastTx);
+                window.tronWeb.fullNode.host = 'https://api.nileex.io';
+                var tronweb = window.tronWeb;
+                var amount = parseFloat($("#sumLabel").text());
+                 await tronWeb.trx.sendTransaction("TN4SdCgnNsoAXnF61Hg7oTfKCsuUwYj5Uw", amount *1000000)
+                    .then((value) => {
+                        console.log("The Promise is resolved!", value);
+                        createAlert("success" , "Successful payment with transaction id : " +value.txid);
+                    }).catch((error) => {
+                        console.error("The Promise is rejected!", error);
+                        createAlert("danger","Error during payment with message : "+ error );
+                    });
             }
-        }, 10)
-        }
+        }, 10);
+    }
+    function createAlert(type, message) {
+        var str =
+        '<div class="alert alert-' + type + '" role="alert">' + message + "</div>";
+        $("#messageHolder").html(str);
+    }
 </script>
 
 </html>
