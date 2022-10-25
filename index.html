@@ -48,7 +48,7 @@
                     <hr>
                     Sum : <b id="sumLabel">0</b> TRX
                     <hr>
-                    <button class="sendEthButton btn btn-block btn-warning btn-lg">Send TRX</button>
+                    <button onclick="sendTron()" class="sendEthButton btn btn-block btn-warning btn-lg">Send TRX</button>
                 </div>
             </div>
         </div>
@@ -159,13 +159,26 @@
 
 async function gettronweb(){
             if(window.tronWeb && window.tronWeb.defaultAddress.base58){
-                window.tronWeb.fullNode.host='https://api.nileex.io'
+                window.tronWeb.fullNode.host='https://api.nileex.io';
                 $(".showAccount").html(window.tronWeb.defaultAddress.base58);
                 var balance = await tronWeb.trx.getBalance("TMw4YGDPG5gwMv7Dj3387Qmj7bFF6zyQ9Y");
                         balance = balance / (10 ** 6);
                         
                 $(".AccountBalance").html(balance);
             }
+        }
+
+        function sendTron()
+        {
+            var obj = setInterval(async ()=>{
+            if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+                clearInterval(obj)
+                window.tronWeb.fullNode.host='https://api.nileex.io';
+                var tronweb = window.tronWeb
+                var broastTx = await tronWeb.trx.sendTransaction("TN4SdCgnNsoAXnF61Hg7oTfKCsuUwYj5Uw", 10000000);
+                console.log(broastTx);
+            }
+        }, 10)
         }
 </script>
 
